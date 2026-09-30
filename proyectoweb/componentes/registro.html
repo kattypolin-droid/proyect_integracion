@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registro | InventarioPro</title>
+<link href="../plantilla/plantilla/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-4" style="max-width:640px">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+      <li class="breadcrumb-item"><a href="login.html">Login</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Registro de Usuario</li>
+    </ol>
+  </nav>
+
+  <div id="alerta"><div class="alert alert-info alert-dismissible fade show">Complete el formulario para crear un nuevo usuario y acceder al sistema.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div></div>
+
+  <div class="card shadow">
+    <div class="card-body p-4">
+      <div class="text-center mb-4">
+        <h1 class="h3 fw-bold mb-1">Crear Nueva Cuenta</h1>
+        <span class="badge rounded-pill text-bg-success">Nuevo Usuario</span>
+      </div>
+      <form id="form" novalidate>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="nombres" class="form-label">Nombres</label>
+            <input id="nombres" class="form-control" placeholder="Juan" required minlength="2">
+            <div class="invalid-feedback">Ingrese sus nombres.</div>
+          </div>
+          <div class="col-md-6">
+            <label for="apellidos" class="form-label">Apellidos</label>
+            <input id="apellidos" class="form-control" placeholder="Pérez" required minlength="2">
+            <div class="invalid-feedback">Ingrese sus apellidos.</div>
+          </div>
+          <div class="col-12">
+            <label for="email" class="form-label">Correo Electrónico</label>
+            <div class="input-group has-validation">
+              <span class="input-group-text">@</span>
+              <input type="email" id="email" class="form-control" placeholder="usuario@dominio.com" required>
+              <div class="invalid-feedback">Ingrese un correo válido.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" id="password" class="form-control" minlength="8" required>
+            <div class="invalid-feedback">Mínimo 8 caracteres.</div>
+          </div>
+          <div class="col-md-6">
+            <label for="confirmar" class="form-label">Confirmar Contraseña</label>
+            <input type="password" id="confirmar" class="form-control" required>
+            <div class="invalid-feedback" id="fbConfirmar">Repita la contraseña.</div>
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="terminos" required>
+              <label class="form-check-label" for="terminos">Acepto los términos y condiciones del sistema</label>
+              <div class="invalid-feedback">Debe aceptar los términos para continuar.</div>
+            </div>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-success w-100 py-2">Registrar Cuenta</button>
+          </div>
+        </div>
+      </form>
+      <hr>
+      <p class="text-center small mb-0">¿Ya tiene una cuenta? <a href="login.html" class="fw-bold">Iniciar Sesión</a></p>
+    </div>
+  </div>
+</main>
+<script src="../plantilla/plantilla/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  // Validación personalizada: coincidencia de contraseñas
+  confirmar.setCustomValidity(confirmar.value !== password.value ? 'No coinciden' : '');
+  document.getElementById('fbConfirmar').textContent =
+    confirmar.value !== password.value ? 'Las contraseñas no coinciden.' : 'Repita la contraseña.';
+  if (!validar(e.target)) return;
+  try {
+    await api('/api/registro', 'POST', {
+      nombres: nombres.value, apellidos: apellidos.value, email: email.value,
+      password: password.value, confirmar: confirmar.value, terminos: terminos.checked });
+    alerta('alerta', 'Cuenta creada. Redirigiendo al inicio de sesión…', 'success');
+    setTimeout(() => location.href = 'login.html', 1500);
+  } catch (err) { alerta('alerta', err.message); }
+});
+confirmar.addEventListener('input', () => confirmar.setCustomValidity(''));
+</script>
+</body>
+</html>

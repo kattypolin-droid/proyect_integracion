@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acceso | InventarioPro</title>
+<link href="../plantilla/plantilla/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container min-vh-100 d-flex flex-column justify-content-center py-4" style="max-width:460px">
+  <div id="alerta"><div class="alert alert-info alert-dismissible fade show">Bienvenido. Ingrese sus credenciales.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div></div>
+
+  <div class="card shadow">
+    <div class="card-body p-4 text-center">
+      <h1 class="h2 fw-light mb-1">Acceso</h1>
+      <span class="badge rounded-pill text-bg-primary mb-4">Control de Usuarios</span>
+
+      <form id="form" class="text-start" novalidate>
+        <label for="email" class="form-label">Correo / Usuario</label>
+        <div class="input-group mb-3 has-validation">
+          <span class="input-group-text">@</span>
+          <input type="email" id="email" class="form-control" placeholder="usuario@dominio.com" required>
+          <div class="invalid-feedback">Ingrese un correo válido.</div>
+        </div>
+
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" id="password" class="form-control mb-3" placeholder="••••••••" required>
+        <div class="invalid-feedback">Ingrese su contraseña.</div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="recordar">
+          <label class="form-check-label" for="recordar">Recordar sesión en este equipo</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Ingresar al Panel</button>
+      </form>
+
+      <div class="d-flex justify-content-between small">
+        <a href="registro.html">Registrar Nueva Cuenta</a>
+        <a href="#" onclick="alerta('alerta','Contacte al administrador para restablecer su contraseña.','info');return false;">Olvidé mi contraseña</a>
+      </div>
+      <a href="index.html" class="d-block mt-3 small">Volver al Inicio</a>
+    </div>
+  </div>
+</main>
+<script src="../plantilla/plantilla/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!validar(e.target)) return;
+  try {
+    await api('/api/login', 'POST', {
+      email: email.value, password: password.value, recordar: recordar.checked });
+    location.href = 'dashboard.html';
+  } catch (err) { alerta('alerta', err.message); }
+});
+</script>
+</body>
+</html>

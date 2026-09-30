@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modificar Producto | InventarioPro</title>
+<link href="../plantilla/plantilla/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-4" style="max-width:760px">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="dashboard.html">Panel de Control</a></li>
+      <li class="breadcrumb-item"><a href="productos.html">Productos</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Editar Producto</li>
+    </ol>
+  </nav>
+  <h1 class="h3 fw-bold mb-3">Modificar Producto <span class="badge rounded-pill text-bg-warning" id="badgeSku">SKU: —</span></h1>
+  <div id="alerta"></div>
+  <div class="card shadow-sm"><div class="card-body">
+    <form id="form" novalidate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre del Producto</label>
+          <input id="nombre" class="form-control" required minlength="3">
+          <div class="invalid-feedback">Mínimo 3 caracteres.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="sku" class="form-label">Código SKU</label>
+          <input id="sku" class="form-control" disabled>
+        </div>
+        <div class="col-md-6">
+          <label for="categoria" class="form-label">Categoría</label>
+          <select id="categoria" class="form-select" required></select>
+        </div>
+        <div class="col-md-6">
+          <label for="etiqueta" class="form-label">Etiqueta Visual</label>
+          <input type="color" id="etiqueta" class="form-control form-control-color w-100">
+        </div>
+        <div class="col-12">
+          <label class="form-label d-block">Disponibilidad</label>
+          <div class="btn-group">
+            <input type="radio" class="btn-check" name="estado" id="e1" value="En Stock">
+            <label class="btn btn-outline-primary" for="e1">En Stock</label>
+            <input type="radio" class="btn-check" name="estado" id="e2" value="Agotado">
+            <label class="btn btn-outline-primary" for="e2">Agotado</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-warning">Actualizar Cambios</button>
+          <a href="productos.html" class="btn btn-outline-primary">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div></div>
+</main>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="modalOk" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5">Confirmar actualización</h2>
+      <button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">¿Desea guardar los cambios realizados a este producto?</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Revisar</button>
+      <button class="btn btn-warning" id="btnConfirmar">Sí, actualizar</button>
+    </div>
+  </div></div>
+</div>
+<script src="../plantilla/plantilla/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get('id');
+const modal = () => bootstrap.Modal.getOrCreateInstance(document.getElementById('modalOk'));
+let actual;
+(async () => {
+  if (!(await requerirSesion())) return;
+  try {
+    if (!id) throw new Error('Seleccione un producto desde el listado antes de editarlo.');
+    actual = await api('/api/productos/' + id);
+    categoria.innerHTML = CATEGORIAS.map(c => `<option>${c}</option>`).join('');
+    nombre.value = actual.nombre; sku.value = actual.sku; etiqueta.value = actual.etiqueta;
+    categoria.value = actual.categorias[0];
+    badgeSku.textContent = 'SKU: ' + actual.sku;
+    (actual.estado === 'Agotado' ? e2 : e1).checked = true;
+  } catch (err) { alerta('alerta', err.message); form.classList.add('d-none'); }
+})();
+form.addEventListener('submit', e => { e.preventDefault(); if (validar(form)) modal().show(); });
+btnConfirmar.addEventListener('click', async () => {
+  try {
+    await api('/api/productos/' + id, 'PUT', {
+      nombre: nombre.value, categorias: [categoria.value], etiqueta: etiqueta.value,
+      estado: document.querySelector('input[name=estado]:checked').value });
+    modal().hide();
+    alerta('alerta', 'Producto actualizado correctamente.', 'success');
+    setTimeout(() => location.href = 'productos.html', 1000);
+  } catch (err) { modal().hide(); alerta('alerta', err.message); }
+});
+</script>
+</body>
+</html>

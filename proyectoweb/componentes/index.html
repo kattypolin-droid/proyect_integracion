@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio | InventarioPro</title>
+<link href="../plantilla/plantilla/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-4" style="max-width:720px">
+  <div class="text-center mb-4">
+    <h1 class="h2 fw-bold mb-1">InventarioPro</h1>
+    <span class="badge rounded-pill text-bg-primary">Sistema Integral de Gestión de Productos y Control de Usuarios</span>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Sección 1: Autenticación de Usuarios</div>
+    <div class="list-group list-group-flush">
+      <a href="login.html" class="list-group-item list-group-item-action">Acceso / Login</a>
+      <a href="registro.html" class="list-group-item list-group-item-action">Registro de Usuario</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Sección 2: Panel de Control</div>
+    <div class="list-group list-group-flush">
+      <a href="dashboard.html" class="list-group-item list-group-item-action">Panel Operativo (Dashboard)</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-bold">Sección 3: Gestión de Productos (CRUD)</div>
+    <div class="list-group list-group-flush">
+      <a href="productos.html" class="list-group-item list-group-item-action">Listado de Productos (Leer)</a>
+      <a href="producto-nuevo.html" class="list-group-item list-group-item-action">Crear Producto</a>
+      <a href="producto-editar.html" class="list-group-item list-group-item-action">
+        Modificar Producto <span class="badge text-bg-secondary float-end">se abre desde Productos</span></a>
+      <a href="producto-eliminar.html" class="list-group-item list-group-item-action">
+        Eliminar Producto <span class="badge text-bg-secondary float-end">se abre desde Productos</span></a>
+    </div>
+  </div>
+
+  <p class="text-center small text-muted">Las pantallas de Panel y Productos requieren iniciar sesión.</p>
+</main>
+<script src="../plantilla/plantilla/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

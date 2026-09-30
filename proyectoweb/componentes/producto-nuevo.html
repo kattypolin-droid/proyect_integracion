@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nuevo Producto | InventarioPro</title>
+<link href="../plantilla/plantilla/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-4" style="max-width:760px">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="dashboard.html">Panel de Control</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Registro de Producto</li>
+    </ol>
+  </nav>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 fw-bold mb-0">Nuevo Producto <span class="badge rounded-pill text-bg-secondary fs-6">Inventario</span></h1>
+    <a href="dashboard.html" class="btn btn-outline-secondary btn-sm">Volver al Panel</a>
+  </div>
+  <div id="alerta"></div>
+  <div class="card shadow-sm"><div class="card-body">
+    <form id="form" novalidate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre del Producto</label>
+          <input id="nombre" class="form-control" placeholder="Ej. Teclado Mecánico RGB" required minlength="3">
+          <div class="invalid-feedback">Mínimo 3 caracteres.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="sku" class="form-label">Código SKU</label>
+          <input id="sku" class="form-control text-uppercase" placeholder="PROD-001" required pattern="[A-Za-z0-9\-]{3,20}">
+          <div class="invalid-feedback">Use letras, números y guiones (3-20).</div>
+        </div>
+        <div class="col-md-6">
+          <label for="categorias" class="form-label">Categorías Asignadas</label>
+          <select id="categorias" class="form-select" multiple size="4" required></select>
+          <div class="form-text">Ctrl/Cmd + clic para elegir varias.</div>
+          <div class="invalid-feedback">Seleccione al menos una categoría.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="etiqueta" class="form-label">Etiqueta Visual</label>
+          <input type="color" id="etiqueta" class="form-control form-control-color w-100" value="#0d6efd">
+        </div>
+        <div class="col-12">
+          <label class="form-label d-block">Disponibilidad Inicial</label>
+          <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="estado" id="e1" value="En Stock" checked>
+            <label class="btn btn-outline-primary" for="e1">En Stock</label>
+            <input type="radio" class="btn-check" name="estado" id="e2" value="Agotado">
+            <label class="btn btn-outline-primary" for="e2">Agotado</label>
+            <input type="radio" class="btn-check" name="estado" id="e3" value="Descontinuado">
+            <label class="btn btn-outline-primary" for="e3">Descontinuado</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="publicado" checked>
+            <label class="form-check-label" for="publicado">Publicar inmediatamente en el catálogo general</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Guardar Producto</button>
+          <a href="productos.html" class="btn btn-outline-danger">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div></div>
+</main>
+<script src="../plantilla/plantilla/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  if (!(await requerirSesion())) return;
+  categorias.innerHTML = CATEGORIAS.map(c => `<option>${c}</option>`).join('');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validar(form)) return;
+    try {
+      await api('/api/productos', 'POST', {
+        nombre: nombre.value, sku: sku.value,
+        categorias: [...categorias.selectedOptions].map(o => o.value),
+        estado: document.querySelector('input[name=estado]:checked').value,
+        publicado: publicado.checked, etiqueta: etiqueta.value });
+      alerta('alerta', 'Producto guardado correctamente.', 'success');
+      setTimeout(() => location.href = 'productos.html', 1000);
+    } catch (err) { alerta('alerta', err.message); }
+  });
+})();
+</script>
+</body>
+</html>

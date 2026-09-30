@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eliminar Producto | InventarioPro</title>
+<link href="../plantilla/plantilla/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-4" style="max-width:760px">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="dashboard.html">Panel de Control</a></li>
+      <li class="breadcrumb-item"><a href="productos.html">Productos</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Eliminar Producto</li>
+    </ol>
+  </nav>
+  <div id="alerta"></div>
+  <div class="alert alert-danger border-danger" role="alert">
+    <h2 class="alert-heading h5 fw-bold">¡Atención! Confirmación requerida</h2>
+    <p class="mb-0 small">Esta acción no se puede deshacer. Se eliminará el registro permanentemente de la base de datos.</p>
+  </div>
+  <div class="card bg-body-secondary mb-3" id="detalle">
+    <div class="card-body">
+      <h3 class="h6 fw-bold">Detalles del Registro:</h3>
+      <p class="mb-1"><strong>SKU:</strong> <span id="dSku"></span></p>
+      <p class="mb-1"><strong>Producto:</strong> <span id="dNombre"></span></p>
+      <p class="mb-1"><strong>Categoría:</strong> <span id="dCat"></span></p>
+      <p class="mb-0"><strong>Estado Actual:</strong> <span id="dEstado"></span></p>
+    </div>
+  </div>
+  <button class="btn btn-danger" id="btnEliminar">Confirmar y Eliminar</button>
+  <a href="productos.html" class="btn btn-secondary">Cancelar y Volver</a>
+</main>
+<script src="../plantilla/plantilla/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get('id');
+(async () => {
+  if (!(await requerirSesion())) return;
+  try {
+    if (!id) throw new Error('Seleccione un producto desde el listado antes de eliminarlo.');
+    const p = await api('/api/productos/' + id);
+    dSku.textContent = p.sku; dNombre.textContent = p.nombre;
+    dCat.textContent = p.categorias.join(', ');
+    dEstado.innerHTML = badgeEstado(p.estado);
+  } catch (err) { alerta('alerta', err.message); detalle.classList.add('d-none'); btnEliminar.disabled = true; }
+})();
+btnEliminar.addEventListener('click', async () => {
+  try {
+    await api('/api/productos/' + id, 'DELETE');
+    alerta('alerta', 'Producto eliminado.', 'success');
+    setTimeout(() => location.href = 'productos.html', 900);
+  } catch (err) { alerta('alerta', err.message); }
+});
+</script>
+</body>
+</html>
